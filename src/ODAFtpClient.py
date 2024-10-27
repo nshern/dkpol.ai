@@ -5,7 +5,7 @@ from pathlib import Path
 
 class ODAFtpClient:
 
-    def __init__(self, root):
+    def __init__(self, root: Path):
         self.__root = root
         logging.basicConfig(
             level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
