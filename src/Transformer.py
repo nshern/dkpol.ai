@@ -1,8 +1,19 @@
+import logging
 import os
 import xml.etree.ElementTree as ET
+from pathlib import Path
+
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s %(message)s"
+)
 
 
 class Transformer:
+
+    def __init__(self, input_dir: Path, output_dir: Path):
+        # Directory where the transformer should take the raw files from
+        self.input_dir = input_dir
+        self.output_dir = output_dir
 
     # def _extract_date_from_xml(self, file):
     #     res = []
@@ -20,10 +31,11 @@ class Transformer:
         with open(file, "r") as f:
             xml_data = f.read()
 
-        # if xml_data == "":
-        #     return
-
-        root = ET.fromstring(xml_data)
+        try:
+            root = ET.fromstring(xml_data)
+        except Exception as e:
+            logging.debug(f"exception: {e}")
+            return
 
         dagsordenspunkter = root.findall(".//DagsordenPunkt")
         id = 0
@@ -44,25 +56,25 @@ class Transformer:
 
         return " ".join(res)
 
-    def _parse_raw_xml_files(self):
-        folders = os.listdir("data")
+    def __parse_raw_xml_files(self):
+        folders = os.listdir(self.input_dir)
 
         for folder in folders:
-            files = os.listdir(f"data/{folder}")
+            files = os.listdir(f"{self.input_dir}/{folder}")
 
             for file in files:
-                filename = f"data/{folder}/{file}"
-                print(filename)
+                filename = f"data/raw/{folder}/{file}"
+                logging.debug(f"parsing {folder}/{file}")
                 parsed = self.__parse_raw_xml_file(filename)
-                parsed_file_title = f"parsed/parsed_{file}"
 
-                with open(parsed_file_title, "w") as f:
-                    f.write(parsed)
+                parsed_file_title = f"{self.output_dir}/parsed_{file}"
+
+                if parsed is not None:
+                    with open(parsed_file_title, "w") as f:
+                        f.write(parsed)
+                else:
+                    return
 
     def run(self):
-        self._parse_raw_xml_files()
-
-
-if __name__ == "__main__":
-    t = Transformer()
-    t.run()
+        logging.info("parsing...")
+        self.__parse_raw_xml_files()

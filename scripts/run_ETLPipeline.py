@@ -5,10 +5,19 @@ from ODAFtpClient import ODAFtpClient
 from Transformer import Transformer
 
 # Create download folder if it doesn't exist
-download_folder = Path(f"{Path(__file__).parent.parent}/data/")
+raw_folder = Path(f"{Path(__file__).parent.parent}/data/raw")
+parsed_folder = Path(f"{Path(__file__).parent.parent}/data/parsed")
 
-if not download_folder.exists():
-    download_folder.mkdir()
 
-pipeline = ETLPipeline(client=ODAFtpClient(download_folder), transformer=Transformer())
+if not raw_folder.exists():
+    raw_folder.mkdir()
+
+if not parsed_folder.exists():
+    parsed_folder.mkdir()
+
+
+pipeline = ETLPipeline(
+    client=ODAFtpClient(raw_folder),
+    transformer=Transformer(input_dir=raw_folder, output_dir=parsed_folder),
+)
 pipeline.run()

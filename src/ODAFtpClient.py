@@ -8,7 +8,7 @@ class ODAFtpClient:
     def __init__(self, root: Path):
         self.__root = root
         logging.basicConfig(
-            level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+            level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
         )
 
     def __connect(self):
@@ -68,7 +68,7 @@ class ODAFtpClient:
                 file_name = f"{self.__root}/{folder}/{file}"
 
                 if Path(file_name).exists():
-                    logging.info("%s already downloaded.", file)
+                    logging.debug("%s already downloaded.", file)
 
                 else:
                     with open(file_name, "wb") as f:

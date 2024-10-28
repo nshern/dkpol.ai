@@ -9,3 +9,4 @@ class ETLPipeline:
 
     def run(self):
         self.client.download_files()
+        self.transformer.run()
