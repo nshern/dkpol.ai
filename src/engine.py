@@ -4,50 +4,22 @@ from pathlib import Path
 
 from llama_index.core import (
     Document,
-    Settings,
     StorageContext,
     VectorStoreIndex,
     load_index_from_storage,
 )
 from llama_index.core.memory import ChatMemoryBuffer
-from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
-from llama_index.llms.azure_openai import AzureOpenAI
-
-from engine_settings import init_azure_settings
-from utils import get_urls_from_sources
 
 
-# Test
-# Test
 class Engine:
 
     def __init__(
         self,
         system_prompt="Besvar spørgsmål med udgangspunkt i det materiale du har til rådighed,\
-        som er hele Nævnenes' hus hjemmeside. \
         Hvis ikke du kan besvare spørgsmålet med udgangspunkt i materialet, \
         som du har til rådighed, skal du siges at du ikke kan finde svaret i materialet. \
         Du skal kun rådgive med udgangspunkt i materialet. Giv ikke generel vejledning. \
         Svar kun på dansk\
-        Nedenstående ikke-udtømmende liste er en række forkortelser, som muligvis kan blive anvendt til at referere til div. instanser:\
-        - **pvanke**: Ankenævnet for Patenter og Varemærker\
-        - **søfart**: Ankenævnet for Søfartsforhold\
-        - **byf/bfn**: Byfornyelsesnævnene\
-        - **byg**: Byggeklageenheden\
-        - **dkbb**: Disciplinær- og klagenævnet for beskikkede bygningssagkyndige\
-        - **dnfe**: Disciplinærnævnet for Ejendomsmæglere\
-        - **ekn**: Energiklagenævnet\
-        - **ean**: Erhvervsankenævnet\
-        - **hb/helbred**: Helbredsnævnet\
-        - **klfu**: Klagenævnet for Udbud\
-        - **konank**: Konkurrenceankenævnet\
-        - **mfkn**: Miljø- og Fødevareklagenævnet\
-        - **mff/fkn**: Mæglingsteamet for Forbrugerklager og Forbrugerklagenævnet\
-        - **plan/pkn:** Planklagenævnet\
-        - **revisor**: Revisornævnet\
-        - **tkn**: Teleklagenævnet\
-        - **tvist**: Tvistighedsnævnet\
-        - **KPO**: Klageportalen\
         ",
         chunk_size=1024,
         similarity_top_k=5,
@@ -58,7 +30,7 @@ class Engine:
         self.similarity_top_k = similarity_top_k
 
         self.index_dir = f"{os.path.dirname(__file__)}/../data/storage/"
-        self.documents_path = f"{os.path.dirname(__file__)}/../data/documents.json"
+        self.documents_path = f"{os.path.dirname(__file__)}/../data/parsed/"
 
         print(f"{self.documents_path}")
 
@@ -92,32 +64,6 @@ class Engine:
             similarity_top_k=self.similarity_top_k,
         )
 
-    def init_azure_settings(self):
-        api_key = os.getenv("AZURE_OPENAI_API_KEY")
-        azure_endpoint = os.getenv("AZURE_OPENAI_API_ENDPOINT")
-
-        api_version = "2023-07-01-preview"
-
-        llm = AzureOpenAI(
-            model="gpt-4o",
-            deployment_name="nh-gpt4o",
-            api_key=api_key,
-            azure_endpoint=azure_endpoint,
-            api_version=api_version,
-        )
-
-        # You need to deploy your own embedding model as well as your own chat completion model
-        embed_model = AzureOpenAIEmbedding(
-            model="text-embedding-ada-002",
-            deployment_name="my-custom-embedding",
-            api_key=api_key,
-            azure_endpoint=azure_endpoint,
-            api_version=api_version,
-        )
-
-        Settings.llm = llm
-        Settings.embed_model = embed_model
-
     def __strip_blank_lines(self, text):
         res = []
         for i in text.split("\n"):
@@ -128,7 +74,6 @@ class Engine:
 
     def reset(self):
         self.chat_engine.reset()
-        # print("initialized engine reset")
 
     def __prepare_documents_for_indexing(self):
 
@@ -184,5 +129,4 @@ class Engine:
 
 
 if __name__ == "__main__":
-    init_azure_settings()
     e = Engine()

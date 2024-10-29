@@ -2,7 +2,7 @@ from pathlib import Path
 
 from ETLPipeline import ETLPipeline
 from ODAFtpClient import ODAFtpClient
-from Transformer import Transformer
+from transformer import Transformer
 
 # Create download folder if it doesn't exist
 raw_folder = Path(f"{Path(__file__).parent.parent}/data/raw")
