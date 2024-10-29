@@ -1,5 +1,5 @@
 from ODAFtpClient import ODAFtpClient
-from Transformer import Transformer
+from transformer import Transformer
 
 
 class ETLPipeline:

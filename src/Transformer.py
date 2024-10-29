@@ -67,7 +67,7 @@ class Transformer:
                 logging.debug(f"parsing {folder}/{file}")
                 parsed = self.__parse_raw_xml_file(filename)
 
-                parsed_file_title = f"{self.output_dir}/parsed_{file}"
+                parsed_file_title = f"{self.output_dir}/parsed_{file}.md"
 
                 if parsed is not None:
                     with open(parsed_file_title, "w") as f:

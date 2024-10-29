@@ -1,4 +1,3 @@
-import json
 import os
 from pathlib import Path
 
@@ -36,8 +35,8 @@ class Engine:
 
         if not Path(self.index_dir).exists():
 
-            if not os.path.isfile(self.documents_path):
-                raise ValueError("No files were found. Need to run ETL module.")
+            # if not os.path.isfile(self.documents_path):
+            #     raise ValueError("No files were found. Need to run ETL module.")
 
             documents = self.__prepare_documents_for_indexing()
 
@@ -64,14 +63,6 @@ class Engine:
             similarity_top_k=self.similarity_top_k,
         )
 
-    def __strip_blank_lines(self, text):
-        res = []
-        for i in text.split("\n"):
-            if i.strip() != "":
-                res.append(i)
-
-        return "\n".join(res)
-
     def reset(self):
         self.chat_engine.reset()
 
@@ -79,28 +70,36 @@ class Engine:
 
         documents = []
 
-        data = None
-        with open(self.documents_path, "r") as file:
-            data = json.load(file)
+        for file in Path(self.documents_path).iterdir():
 
-        if data is not None:
-            for i in data:
-                document = Document(
-                    text=self.__strip_blank_lines(i["content_transformed"]),
-                    metadata={
-                        "url": i["url"],
-                    },
-                    excluded_llm_metadata_keys=["time"],
-                    metadata_seperator="::",
-                    metadata_template="{key}=>{value}",
-                    text_template="Metadata: {metadata_str}\n-----\nContent: {content}",
-                )
+            with open(file, "r") as file:
+                text = file.read()
 
-                documents.append(document)
-        else:
-            raise ValueError("data is None")
+            document = Document(text=text)
+
+            documents.append(document)
 
         return documents
+
+        #
+        # if data is not None:
+        #     for i in data:
+        #         document = Document(
+        #             text=self.__strip_blank_lines(i["content_transformed"]),
+        #             metadata={
+        #                 "url": i["url"],
+        #             },
+        #             excluded_llm_metadata_keys=["time"],
+        #             metadata_seperator="::",
+        #             metadata_template="{key}=>{value}",
+        #             text_template="Metadata: {metadata_str}\n-----\nContent: {content}",
+        #         )
+        #
+        #         documents.append(document)
+        # else:
+        #     raise ValueError("data is None")
+        #
+        # return documents
 
     def repl_chat(self, include_sources=True):
         """
