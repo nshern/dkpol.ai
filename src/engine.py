@@ -118,10 +118,10 @@ class Engine:
             print(f"{BOLD}{CYAN}Chatbot:{RESET} { response }\n")
 
             # If include_sources parameter is se to true urls will be printed to STDOUT for each repsponse
-            if include_sources == True:
-                print(f"{BOLD}Kildehenvisning:{RESET}")
-                for i in get_urls_from_sources(response):
-                    print(f"{ITALIC}- {i}{RESET}")
+            # if include_sources:
+            #     print(f"{BOLD}Kildehenvisning:{RESET}")
+            #     for i in get_urls_from_sources(response):
+            #         print(f"{ITALIC}- {i}{RESET}")
 
     def chat(self, query):
         return self.chat_engine.chat(query)
@@ -129,3 +129,4 @@ class Engine:
 
 if __name__ == "__main__":
     e = Engine()
+    e.repl_chat(include_sources=False)
