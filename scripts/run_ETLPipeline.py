@@ -1,8 +1,8 @@
 from pathlib import Path
 
 from ETLPipeline import ETLPipeline
-from ODAFtpClient import ODAFtpClient
-from transformer import Transformer
+from FtpDownloadClient import FtpDownloadClient
+from Transformer import Transformer
 
 # Create download folder if it doesn't exist
 raw_folder = Path(f"{Path(__file__).parent.parent}/data/raw")
@@ -17,7 +17,11 @@ if not parsed_folder.exists():
 
 
 pipeline = ETLPipeline(
-    client=ODAFtpClient(raw_folder),
+    client=FtpDownloadClient(
+        raw_folder,
+        ftp_server_address="oda.ft.dk",
+        ftp_source_path="ODAXML/Referat/samling",
+    ),
     transformer=Transformer(input_dir=raw_folder, output_dir=parsed_folder),
 )
 pipeline.run()

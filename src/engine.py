@@ -11,7 +11,6 @@ from llama_index.core.memory import ChatMemoryBuffer
 
 
 class Engine:
-
     def __init__(
         self,
         system_prompt="Besvar spørgsmål med udgangspunkt i det materiale du har til rådighed,\
@@ -23,7 +22,6 @@ class Engine:
         chunk_size=1024,
         similarity_top_k=5,
     ):
-
         self.system_prompt = system_prompt
         self.chunk_size = chunk_size
         self.similarity_top_k = similarity_top_k
@@ -34,7 +32,6 @@ class Engine:
         print(f"{self.documents_path}")
 
         if not Path(self.index_dir).exists():
-
             # if not os.path.isfile(self.documents_path):
             #     raise ValueError("No files were found. Need to run ETL module.")
 
@@ -67,11 +64,9 @@ class Engine:
         self.chat_engine.reset()
 
     def __prepare_documents_for_indexing(self):
-
         documents = []
 
         for file in Path(self.documents_path).iterdir():
-
             with open(file, "r") as file:
                 text = file.read()
 
