@@ -7,25 +7,28 @@ class FtpDownloadClient:
     def __init__(
         self,
         download_directory: Path,
-        ftp_server_address: str = "oda.ft.dk",
-        ftp_source_path: str = "ODAXML/Referat/samling",
+        ftp_server_address: str,
+        ftp_source_path: str,
+        logger: logging.Logger = logging.getLogger(__name__),
     ):
         self.download_directory = download_directory
         self.ftp_server_address = ftp_server_address
         self.ftp_source_path = ftp_source_path
-
-        logging.basicConfig(
-            level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-        )
+        self.logger = logger
 
     def _connect_to_ftp_server(self):
         """
-        This method connects to the oda.ft.dk database via ftp and returns a connection object
+        This method connects to the ftp server specified in the ftp_server_address attribute and
+        returns a connection object
         """
 
         try:
             ftp_connection = ftplib.FTP(self.ftp_server_address)
             ftp_connection.login()
+            self.logger.info(
+                "Successfully established connection to FTP server: %s",
+                self.ftp_server_address,
+            )
 
         except ftplib.all_errors as e:
             logging.error("Failed to connect or log in to the FTP server: %s", e)
@@ -34,12 +37,18 @@ class FtpDownloadClient:
         return ftp_connection
 
     def _navigate_to_ftp_source_path(self, ftp_connection):
+        """
+        This method connects to the oda.ft.dk database via ftp and returns a connection object
+        """
 
         try:
-            # navigate to the directory where meeting notes are stored
             ftp_connection.cwd(self.ftp_source_path)
+            self.logger.info(
+                "Successfully navigated to FTP source path: %s", self.ftp_source_path
+            )
+
         except ftplib.error_perm as e:
-            logging.error("Failed to go to specified directory: %s", e)
+            logging.error("Failed to navigate to specified directory: %s", e)
             raise
 
         return ftp_connection
