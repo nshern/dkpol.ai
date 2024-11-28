@@ -113,3 +113,16 @@ class FtpDownloadClient:
         connection = self._connect_to_ftp_server()
         connection = self._navigate_to_ftp_source_path(connection)
         self.download_files(connection)
+
+
+if __name__ == "__main__":
+
+    download_directory = Path(f"{Path(__file__).parent.parent}/data/test")
+    server_address = "oda.ft.dk"
+    source_path = "ODAXML/Referat/samling"
+
+    client = FtpDownloadClient(
+        download_directory=download_directory,
+        ftp_server_address=server_address,
+        ftp_source_path=source_path,
+    )
