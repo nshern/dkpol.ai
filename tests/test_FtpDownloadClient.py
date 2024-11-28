@@ -15,7 +15,7 @@ class TestFtpConnection(unittest.TestCase):
         )
 
     @patch("ftplib.FTP")
-    def test_successful_connection(self, mock_ftp_class):
+    def test_successful_connection(self, mock_ftp_class: Mock):
 
         mock_ftp_class.return_value = Mock()
 
@@ -24,7 +24,7 @@ class TestFtpConnection(unittest.TestCase):
         mock_ftp_class.assert_called_with("ftp.test.server")
 
     @patch("ftplib.FTP")
-    def test_failed_connection(self, mock_ftp_class):
+    def test_failed_connection(self, mock_ftp_class: Mock):
 
         mock_ftp_class.side_effect = Exception("Connection failed.")
 
@@ -46,7 +46,23 @@ class TestFtpNaviagtionToSourcepath(unittest.TestCase):
 
         mock_ftp_instance = Mock()
         mock_ftp_class.return_value = mock_ftp_instance
+        self.client.ftp_connection = mock_ftp_instance
 
-        self.client._navigate_to_ftp_source_path(mock_ftp_instance)
+        self.client._navigate_to_ftp_source_path()
 
         mock_ftp_instance.cwd.assert_called_with("/test/path")
+
+    @patch("ftplib.FTP")
+    def test_failed_navigation_to_source_path(self, mock_ftp_class):
+        mock_ftp_class.return_value = Mock()
+
+        mock_ftp_instance = Mock()
+        mock_ftp_class.return_value = mock_ftp_instance
+        self.client.ftp_connection = mock_ftp_instance
+
+        mock_ftp_class.return_value.cwd.side_effect = Exception("Failed navigation")
+
+        with self.assertRaises(Exception):
+            self.client._navigate_to_ftp_source_path()
+
+        mock_ftp_class.return_value.cwd.assert_called_with("/test/path")
